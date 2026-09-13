@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>COSMIC DOWNLOADER</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar -->
+        <div class="sidebar glass">
+            <div class="brand">
+                <div class="logo">🚀</div>
+                <h2>COSMIC</h2>
+            </div>
+            <nav>
+                <div class="nav-item active">
+                    <span class="icon">⬇️</span>
+                    <span>Downloads</span>
+                </div>
+                <div class="nav-item">
+                    <span class="icon">⚙️</span>
+                    <span>Settings</span>
+                </div>
+            </nav>
+            <div class="settings-panel">
+                <div class="input-group">
+                    <label>Quality</label>
+                    <select id="qualitySelect" class="glass-input">
+                        <option value="2160p">4K (2160p)</option>
+                        <option value="1080p" selected>HD (1080p)</option>
+                        <option value="720p">720p</option>
+                        <option value="480p">480p</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label>Mode</label>
+                    <select id="modeSelect" class="glass-input">
+                        <option value="single" selected>Single Video</option>
+                        <option value="playlist">Playlist</option>
+                    </select>
+                </div>
+                <button id="folderBtn" class="btn glass-btn folder-btn">📁 Choose Save Path</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="top-section glass">
+                <div class="input-container">
+                    <textarea id="urlInput" class="glass-input" placeholder="Paste YouTube URL here...&#10;[https://www.youtube.com/watch?v=...]"></textarea>
+                    <button class="paste-btn">📋</button>
+                </div>
+                <button id="addBtn" class="btn primary-btn neon-glow">ADD TO QUEUE ➕</button>
+            </div>
+
+            <div class="queue-section">
+                <div class="queue-header">
+                    <h3>Download Queue</h3>
+                    <span id="queueCount" class="badge">0</span>
+                    <button id="stopBtn" class="btn danger-btn glass-btn" style="display: none;">STOP ALL</button>
+                </div>
+                
+                <div id="queueList" class="queue-list">
+                    <!-- Queue items will be generated here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
