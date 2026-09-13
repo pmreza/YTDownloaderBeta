@@ -8,12 +8,20 @@
 
 body {
     font-family: 'Inter', sans-serif;
-    background: url('assets/bg.jpg') no-repeat center center fixed;
-    background-size: cover;
+    background: #14172a;
     color: #ffffff;
     height: 100vh;
     overflow: hidden;
     user-select: none;
+}
+
+#bg-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
 }
 
 .app-container {

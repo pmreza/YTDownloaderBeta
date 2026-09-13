@@ -27,7 +27,7 @@ class Api:
         self.window = None
         self.app_logger = None
         self.downloader = None
-        self.deps_manager = None
+        self.deps_manager = DependencyManager(self.bin_path, logger=None)
 
     def set_window(self, window):
         self.window = window
@@ -38,7 +38,7 @@ class Api:
         self.downloader.on_progress = self.on_progress
         self.downloader.on_finish_all = self.on_finish_all
         
-        self.deps_manager = DependencyManager(self.bin_path, logger=self.app_logger)
+        self.deps_manager.logger = self.app_logger
 
     def run_startup_checks(self):
         self.deps_manager.verify_and_download()
