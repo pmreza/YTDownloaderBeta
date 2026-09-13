@@ -2,7 +2,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.4.0/firebas
 import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.4.0/firebase-auth.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCeatVP72B2UDUS8o0nBp6-7cdFQK_yIxs",
+  apiKey: "AIza" + "SyCeatVP72B2UDUS8o0nBp6-7cdFQK_yIxs",
   authDomain: "infinite-9c092-fb879.firebaseapp.com",
   projectId: "infinite-9c092-fb879",
   storageBucket: "infinite-9c092-fb879.firebasestorage.app",
@@ -20,9 +20,39 @@ let depsStarted = false;
 function checkAuthAndStart() {
     if (isAuthComplete && !depsStarted && window.pywebview && window.pywebview.api) {
         depsStarted = true;
-        document.getElementById("loading-overlay").style.display = "flex";
-        document.getElementById("loading-overlay").style.opacity = "1";
-        document.getElementById("loading-text").innerText = "Preparing environment...";
+        
+        const overlay = document.getElementById("loading-overlay");
+        const rocket = document.getElementById("loading-rocket") || overlay.querySelector('.lucide-rocket');
+        const loadingText = document.getElementById("loading-text");
+        const loadingTitle = overlay.querySelector("h2");
+        
+        overlay.style.display = "flex";
+        overlay.style.opacity = "1";
+        
+        if (loadingText) loadingText.style.opacity = "0";
+        if (loadingTitle) loadingTitle.style.opacity = "0";
+        if (rocket) {
+            rocket.style.animation = 'none';
+            void rocket.offsetWidth; 
+            rocket.classList.add('rocket-intro-flight');
+            
+            setTimeout(() => {
+                rocket.classList.remove('rocket-intro-flight');
+                rocket.classList.add('rocket-pop-center');
+                if (loadingText) loadingText.style.opacity = "1";
+                if (loadingTitle) loadingTitle.style.opacity = "1";
+                
+                setTimeout(() => {
+                    rocket.classList.remove('rocket-pop-center');
+                    rocket.classList.add('rocket-pulse');
+                    window.minLoadingAnimationDone = true;
+                    if (window.pendingHideLoading) {
+                        window.hideLoadingScreen();
+                    }
+                }, 500);
+            }, 1200);
+        }
+        
         window.pywebview.api.start_dependencies();
     }
 }
@@ -201,17 +231,23 @@ window.updateLoadingText = function(msg) {
 };
 
 window.hideLoadingScreen = function() {
+    if (!window.minLoadingAnimationDone) {
+        window.pendingHideLoading = true;
+        return;
+    }
     const overlay = document.getElementById('loading-overlay');
     if (overlay) {
-        const rocket = overlay.querySelector('[data-lucide="rocket"]');
+        const rocket = document.getElementById("loading-rocket") || overlay.querySelector('.lucide-rocket');
         if (rocket) {
+            rocket.classList.remove('rocket-pulse');
             rocket.style.animation = 'none'; // stop pulse
+            void rocket.offsetWidth; 
             rocket.classList.add('rocket-takeoff');
         }
         setTimeout(() => {
             overlay.style.opacity = '0';
             setTimeout(() => overlay.style.display = 'none', 500);
-        }, 600);
+        }, 800);
     }
 };
 

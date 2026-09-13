@@ -333,14 +333,47 @@ select.glass-input {
     font-weight: 800;
     color: #fff;
 }
+/* Rocket Intro Flight */
+.rocket-intro-flight {
+    animation: flightAcross 1.2s ease-in-out forwards !important;
+}
+@keyframes flightAcross {
+    0% { transform: translate(-50vw, 50vh) scale(1) rotate(0deg); opacity: 0; }
+    20% { opacity: 1; }
+    80% { opacity: 1; }
+    100% { transform: translate(50vw, -50vh) scale(1.5) rotate(0deg); opacity: 0; }
+}
+
+/* Rocket Pop Center */
+.rocket-pop-center {
+    animation: popCenter 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards !important;
+}
+@keyframes popCenter {
+    0% { transform: scale(0) rotate(0deg); opacity: 0; }
+    80% { transform: scale(1.2) rotate(0deg); opacity: 1; }
+    100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+/* Rocket Pulse */
+.rocket-pulse {
+    animation: loadingPulse 1.5s infinite !important;
+}
+
+/* Loading Text Transition */
+#loading-overlay h2, #loading-text {
+    transition: opacity 0.5s ease;
+}
+
 /* Rocket Takeoff Animation */
 .rocket-takeoff {
-    animation: takeoff 0.6s cubic-bezier(0.5, 0, 0.2, 1) forwards !important;
+    animation: takeoff 1s cubic-bezier(0.4, 0, 0.2, 1) forwards !important;
 }
 @keyframes takeoff {
-    0% { transform: scale(1) rotate(0deg); }
-    30% { transform: scale(0.8) rotate(-15deg); }
-    100% { transform: translate(100vw, -100vh) scale(2) rotate(45deg); opacity: 0; }
+    0% { transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 0px #3b82f6); opacity: 1; }
+    20% { transform: scale(0.8) rotate(-15deg); filter: drop-shadow(0 0 10px #3b82f6); opacity: 1; }
+    50% { transform: scale(1.2) rotate(10deg); filter: drop-shadow(0 0 20px #3b82f6); opacity: 1; }
+    70% { transform: scale(0.9) rotate(-5deg); filter: drop-shadow(0 0 30px #3b82f6); opacity: 1; }
+    100% { transform: scale(25) rotate(360deg); filter: drop-shadow(0 0 60px #00f2fe); opacity: 0; }
 }
 
 /* Download Anim Button */

@@ -70,6 +70,10 @@ class Api:
         self._deps_manager.verify_and_download()
         self._deps_manager.update_apps_if_needed()
         self._hide_loading = True
+        
+    def start_dependencies(self):
+        import threading
+        threading.Thread(target=self.run_startup_checks, daemon=True).start()
 
     def select_folder(self):
         root = tk.Tk()
@@ -126,15 +130,10 @@ class InfiniteDownload:
         self.base_path = base_path
         self.api = Api(base_path, exe_dir)
 
-    def run_startup_checks(self):
-        import threading
-        threading.Thread(target=self.api.run_startup_checks, daemon=True).start()
-
     def mainloop(self):
         html_path = os.path.join(self.base_path, "src", "ui", "index.html")
         window = webview.create_window('INFINITE DOWNLOADER', url=f'file:///{html_path.replace(os.sep, "/")}',
                                        js_api=self.api, width=1000, height=750, 
                                        frameless=False, easy_drag=False, background_color='#0B0F19')
         self.api.set_window(window)
-        window.events.loaded += self.run_startup_checks
         webview.start()
