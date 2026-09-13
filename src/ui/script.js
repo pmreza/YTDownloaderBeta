@@ -16,8 +16,6 @@ window.addEventListener('pywebviewready', function() {
         const mode = document.getElementById('modeSelect').value;
         const isPlaylist = mode === 'playlist';
         
-        // Add placeholder card for UI feedback
-        createProgressCard("Downloading...", urls.split('\n').length + " items");
         document.getElementById('urlInput').value = '';
         
         // Call Python
@@ -57,13 +55,7 @@ window.updateQueueStatus = function(qsize) {
     } else {
         stopBtn.style.display = 'none';
         if(currentProgressId) {
-            // Mark the last card as completed
-            const card = document.getElementById(currentProgressId);
-            if(card) {
-                card.querySelector('.card-status').innerText = "Completed";
-                card.querySelector('.progress-text').innerText = "100%";
-                setRingProgress(card.querySelector('.progress-ring-bar'), 100);
-            }
+            markCardCompleted(currentProgressId);
             currentProgressId = null;
         }
     }
@@ -79,14 +71,66 @@ window.updateProgress = function(percent) {
     }
 };
 
+window.updateLoadingText = function(msg) {
+    const text = document.getElementById('loading-text');
+    if (text) text.innerText = msg;
+};
+
+window.hideLoadingScreen = function() {
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.style.display = 'none', 500);
+    }
+};
+
 window.logMessage = function(msg) {
     if(msg.includes(">>> Starting Download:")) {
         const url = msg.replace(">>> Starting Download:", "").trim();
         createProgressCard(url, "Downloading", url);
     }
+    
+    const overlay = document.getElementById('loading-overlay');
+    if (overlay && overlay.style.display !== 'none') {
+        updateLoadingText(msg);
+    }
 };
 
+// Polling loop to fetch state from Python backend
+setInterval(async () => {
+    if (window.pywebview && window.pywebview.api) {
+        try {
+            const state = await window.pywebview.api.get_state();
+            if (state) {
+                if (state.logs && state.logs.length > 0) {
+                    for (const msg of state.logs) {
+                        logMessage(msg);
+                    }
+                }
+                
+                if (state.qsize !== -1) {
+                    updateQueueStatus(state.qsize);
+                }
+                
+                if (state.progress !== -1) {
+                    updateProgress(state.progress);
+                }
+                
+                if (state.hide_loading) {
+                    hideLoadingScreen();
+                }
+            }
+        } catch (e) {
+            console.error("Poller error:", e);
+        }
+    }
+}, 200);
+
 function createProgressCard(title, subtitle, url = "") {
+    if(currentProgressId) {
+        markCardCompleted(currentProgressId);
+    }
+    
     progressCardId++;
     const id = 'card-' + progressCardId;
     currentProgressId = id;
@@ -171,3 +215,26 @@ function setRingProgress(element, percent) {
     const offset = circumference - (percent / 100) * circumference;
     element.style.strokeDashoffset = offset;
 }
+
+function markCardCompleted(id) {
+    const card = document.getElementById(id);
+    if(card) {
+        card.querySelector('.card-status').innerText = "Completed";
+        card.querySelector('.card-status').style.color = "#4ade80"; // Green color
+        card.querySelector('.progress-text').innerText = "100%";
+        setRingProgress(card.querySelector('.progress-ring-bar'), 100);
+        
+        // Remove PAUSE/CANCEL and replace with OPEN FOLDER
+        const actions = card.querySelector('.card-actions');
+        if (actions) {
+            actions.innerHTML = `<button class="btn glass-btn action-btn" onclick="openSaveFolder()" style="padding: 5px 10px; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;"><i data-lucide="folder-open" style="width: 12px; height: 12px;"></i> OPEN FOLDER</button>`;
+        }
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    }
+}
+
+window.openSaveFolder = async function() {
+    await window.pywebview.api.open_save_folder();
+};

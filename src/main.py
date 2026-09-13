@@ -41,5 +41,4 @@ if __name__ == "__main__":
     from src.ui.app_window import InfiniteDownload
     
     app = InfiniteDownload(base_path, exe_dir)
-    app.run_startup_checks()
     app.mainloop()

@@ -3,10 +3,10 @@
 
 a = Analysis(
     ['src/main.py'],
-    pathex=[],
+    pathex=['.'],
     binaries=[],
     datas=[('src/ui/index.html', 'src/ui'), ('src/ui/style.css', 'src/ui'), ('src/ui/script.js', 'src/ui'), ('src/ui/animation.js', 'src/ui')],
-    hiddenimports=[],
+    hiddenimports=['src.ui.app_window', 'src.core.downloader', 'src.core.deps_manager'],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
@@ -35,4 +35,5 @@ exe = EXE(
     target_arch=None,
     codesign_identity=None,
     entitlements_file=None,
+    icon=['logo.ico'],
 )
