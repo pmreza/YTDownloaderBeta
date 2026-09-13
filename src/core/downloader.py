@@ -16,6 +16,7 @@ class YoutubeDownloader:
         self.dl_queue = queue.Queue()
         self.is_downloading = False
         self.download_process = None
+        self.is_cancelled = False
         
         # Callbacks
         self.on_queue_update = None
@@ -55,6 +56,7 @@ class YoutubeDownloader:
             
             self.log(f"\n>>> Starting Download: {current_url}\n")
             
+            self.is_cancelled = False
             self._run_process(current_url, quality, is_playlist)
             
             self.dl_queue.task_done()
@@ -97,7 +99,10 @@ class YoutubeDownloader:
                             
             p.wait()
             if p.returncode != 0:
-                raise Exception(f"yt-dlp exited with code {p.returncode}. See log for details.")
+                if self.is_cancelled:
+                    self.log("--- Download was paused/cancelled by user ---")
+                else:
+                    raise Exception(f"yt-dlp exited with code {p.returncode}. See log for details.")
                 
         except Exception as e:
             if self.logger:
@@ -112,10 +117,13 @@ class YoutubeDownloader:
         if self.on_queue_update:
             self.on_queue_update(0)
             
+        self.cancel_current()
+        self.is_downloading = False
+
+    def cancel_current(self):
+        self.is_cancelled = True
         if self.download_process:
             try:
                 subprocess.run(f"taskkill /F /T /PID {self.download_process.pid}", shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
             except:
                 pass
-                
-        self.is_downloading = False

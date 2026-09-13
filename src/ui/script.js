@@ -1,5 +1,7 @@
 let progressCardId = 0;
 let currentProgressId = null;
+let lastQuality = "1080p";
+let lastIsPlaylist = false;
 
 // Ensure API is ready
 window.addEventListener('pywebviewready', function() {
@@ -19,6 +21,8 @@ window.addEventListener('pywebviewready', function() {
         document.getElementById('urlInput').value = '';
         
         // Call Python
+        lastQuality = quality;
+        lastIsPlaylist = isPlaylist;
         await window.pywebview.api.add_to_queue(urls, quality, isPlaylist);
     });
 
@@ -77,21 +81,31 @@ window.updateProgress = function(percent) {
 
 window.logMessage = function(msg) {
     if(msg.includes(">>> Starting Download:")) {
-        const title = msg.replace(">>> Starting Download:", "").trim();
-        createProgressCard(title, "Downloading");
+        const url = msg.replace(">>> Starting Download:", "").trim();
+        createProgressCard(url, "Downloading", url);
     }
 };
 
-function createProgressCard(title, subtitle) {
+function createProgressCard(title, subtitle, url = "") {
     progressCardId++;
     const id = 'card-' + progressCardId;
     currentProgressId = id;
     
+    // Shorten title if it's a URL
+    let displayTitle = title;
+    if(title.startsWith("http")) {
+        displayTitle = title.length > 50 ? title.substring(0, 47) + "..." : title;
+    }
+    
     const cardHTML = `
-        <div id="${id}" class="queue-card glass">
+        <div id="${id}" class="queue-card glass" data-url="${url}">
             <div class="card-info">
-                <div class="card-title">${title}</div>
+                <div class="card-title" title="${title}">${displayTitle}</div>
                 <div class="card-status">${subtitle}</div>
+                <div class="card-actions" style="margin-top: 8px; display: flex; gap: 10px;">
+                    <button class="btn glass-btn action-btn pause-btn" onclick="pauseDownload('${id}')" style="padding: 5px 10px; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;"><i data-lucide="pause" style="width: 12px; height: 12px;"></i> PAUSE</button>
+                    <button class="btn danger-btn glass-btn action-btn cancel-btn" onclick="cancelDownload('${id}')" style="padding: 5px 10px; font-size: 10px; display: flex; align-items: center; justify-content: center; gap: 4px;"><i data-lucide="x" style="width: 12px; height: 12px;"></i> CANCEL</button>
+                </div>
             </div>
             <div class="progress-ring">
                 <svg>
@@ -105,7 +119,52 @@ function createProgressCard(title, subtitle) {
     
     const queueList = document.getElementById('queueList');
     queueList.insertAdjacentHTML('afterbegin', cardHTML);
+    if (window.lucide) {
+        lucide.createIcons();
+    }
 }
+
+window.pauseDownload = async function(id) {
+    if(currentProgressId === id) {
+        await window.pywebview.api.cancel_current_download();
+    }
+    
+    const card = document.getElementById(id);
+    if(card) {
+        card.querySelector('.card-status').innerText = "Paused";
+        card.querySelector('.card-status').style.color = "#fb923c"; // Orange for paused
+        
+        const pauseBtn = card.querySelector('.pause-btn');
+        pauseBtn.innerHTML = '<i data-lucide="play" style="width: 12px; height: 12px;"></i> RESUME';
+        pauseBtn.style.color = "#4ade80";
+        pauseBtn.setAttribute('onclick', `resumeDownload('${id}')`);
+        if (window.lucide) {
+            lucide.createIcons();
+        }
+    }
+};
+
+window.resumeDownload = async function(id) {
+    const card = document.getElementById(id);
+    if(card) {
+        const url = card.getAttribute('data-url');
+        card.remove(); // Remove the paused card, a new one will spawn
+        if(url) {
+            await window.pywebview.api.add_to_queue(url, lastQuality, lastIsPlaylist);
+        }
+    }
+};
+
+window.cancelDownload = async function(id) {
+    if(currentProgressId === id) {
+        await window.pywebview.api.cancel_current_download();
+    }
+    
+    const card = document.getElementById(id);
+    if(card) {
+        card.remove();
+    }
+};
 
 function setRingProgress(element, percent) {
     const circumference = 176; // 2 * pi * 28

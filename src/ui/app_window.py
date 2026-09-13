@@ -19,9 +19,9 @@ class WebViewLogger:
         self.log(f"ERROR ({context}): {str(e)}")
 
 class Api:
-    def __init__(self, base_path: str):
+    def __init__(self, base_path: str, exe_dir: str):
         self.base_path = base_path
-        self.bin_path = os.path.join(self.base_path, "bin")
+        self.bin_path = os.path.join(exe_dir, "bin")
         self.save_dir = os.path.join(os.path.expanduser("~"), "Desktop", "Infinite_Downloads")
         
         self.window = None
@@ -66,6 +66,10 @@ class Api:
     def stop_download(self):
         if self.downloader:
             self.downloader.stop()
+            
+    def cancel_current_download(self):
+        if self.downloader:
+            self.downloader.cancel_current()
 
     def on_queue_update(self, qsize: int):
         if self.window:
@@ -80,9 +84,9 @@ class Api:
             self.window.evaluate_js('if(window.updateQueueStatus) window.updateQueueStatus(0);')
 
 class InfiniteDownload:
-    def __init__(self, base_path: str):
+    def __init__(self, base_path: str, exe_dir: str):
         self.base_path = base_path
-        self.api = Api(base_path)
+        self.api = Api(base_path, exe_dir)
 
     def run_startup_checks(self):
         import threading
@@ -90,7 +94,7 @@ class InfiniteDownload:
 
     def mainloop(self):
         html_path = os.path.join(self.base_path, "src", "ui", "index.html")
-        window = webview.create_window('COSMIC DOWNLOADER', url=f'file:///{html_path.replace(os.sep, "/")}',
+        window = webview.create_window('INFINITE DOWNLOADER', url=f'file:///{html_path.replace(os.sep, "/")}',
                                        js_api=self.api, width=1000, height=750, 
                                        frameless=False, easy_drag=False, background_color='#0B0F19')
         self.api.set_window(window)

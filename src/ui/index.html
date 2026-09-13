@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>COSMIC DOWNLOADER</title>
+    <title>INFINITE DOWNLOADER</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
     <canvas id="bg-canvas"></canvas>
@@ -12,16 +13,16 @@
         <!-- Sidebar -->
         <div class="sidebar glass">
             <div class="brand">
-                <div class="logo">🚀</div>
-                <h2>COSMIC</h2>
+                <div class="logo"><i data-lucide="rocket"></i></div>
+                <h2>INFINITE</h2>
             </div>
             <nav>
                 <div class="nav-item active">
-                    <span class="icon">⬇️</span>
+                    <span class="icon"><i data-lucide="download"></i></span>
                     <span>Downloads</span>
                 </div>
                 <div class="nav-item">
-                    <span class="icon">⚙️</span>
+                    <span class="icon"><i data-lucide="settings"></i></span>
                     <span>Settings</span>
                 </div>
             </nav>
@@ -42,7 +43,7 @@
                         <option value="playlist">Playlist</option>
                     </select>
                 </div>
-                <button id="folderBtn" class="btn glass-btn folder-btn">📁 Choose Save Path</button>
+                <button id="folderBtn" class="btn glass-btn folder-btn" style="display: flex; align-items: center; justify-content: center; gap: 8px;"><i data-lucide="folder-open"></i> Choose Save Path</button>
             </div>
         </div>
 
@@ -51,9 +52,9 @@
             <div class="top-section glass">
                 <div class="input-container">
                     <textarea id="urlInput" class="glass-input" placeholder="Paste YouTube URL here...&#10;[https://www.youtube.com/watch?v=...]"></textarea>
-                    <button class="paste-btn">📋</button>
+                    <button class="paste-btn" style="display: flex; align-items: center; justify-content: center;"><i data-lucide="clipboard-paste"></i></button>
                 </div>
-                <button id="addBtn" class="btn primary-btn neon-glow">ADD TO QUEUE ➕</button>
+                <button id="addBtn" class="btn primary-btn neon-glow" style="display: flex; align-items: center; justify-content: center; gap: 8px;"><i data-lucide="plus"></i> ADD TO QUEUE</button>
             </div>
 
             <div class="queue-section">
@@ -72,5 +73,8 @@
     
     <script src="animation.js"></script>
     <script src="script.js"></script>
+    <script>
+        lucide.createIcons();
+    </script>
 </body>
 </html>

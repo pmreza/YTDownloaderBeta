@@ -19,10 +19,19 @@ def install_dependencies():
                 print(f"--- Failed to install {lib_name}: {e} ---")
 
 if __name__ == "__main__":
+    import multiprocessing
+    multiprocessing.freeze_support()
+    
     install_dependencies()
     
-    # Base path is the project root (one level up from src)
-    base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    if getattr(sys, 'frozen', False):
+        # When bundled by PyInstaller
+        base_path = sys._MEIPASS
+        exe_dir = os.path.dirname(sys.executable)
+    else:
+        # Base path is the project root (one level up from src)
+        base_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        exe_dir = base_path
     
     # Add base path to sys.path so 'src' can be imported
     if base_path not in sys.path:
@@ -31,6 +40,6 @@ if __name__ == "__main__":
     # Import the UI only after dependencies are installed
     from src.ui.app_window import InfiniteDownload
     
-    app = InfiniteDownload(base_path)
+    app = InfiniteDownload(base_path, exe_dir)
     app.run_startup_checks()
     app.mainloop()
