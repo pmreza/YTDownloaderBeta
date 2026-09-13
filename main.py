@@ -103,10 +103,12 @@ def main(page: ft.Page):
     
     def fetch_metadata(url):
         try:
+            env = os.environ.copy()
+            env["PATH"] = bin_path + os.pathsep + env.get("PATH", "")
             cmd = [yt_dlp_path, "-j", "--no-warnings", url]
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-            res = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', startupinfo=startupinfo)
+            res = subprocess.run(cmd, capture_output=True, text=True, encoding='utf-8', errors='replace', startupinfo=startupinfo, env=env)
             if res.returncode != 0: raise Exception(res.stderr)
             
             data = json.loads(res.stdout.splitlines()[-1])
@@ -367,10 +369,12 @@ def main(page: ft.Page):
                "-f", format_str, "--merge-output-format", "mp4"]
         
         try:
+            env = os.environ.copy()
+            env["PATH"] = bin_path + os.pathsep + env.get("PATH", "")
             startupinfo = subprocess.STARTUPINFO()
             startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
             download_process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True, 
-                                 encoding='utf-8', startupinfo=startupinfo)
+                                 encoding='utf-8', errors='replace', startupinfo=startupinfo, env=env)
             for line in download_process.stdout:
                 line_str = line.strip()
                 if not line_str: continue
