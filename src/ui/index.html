@@ -21,6 +21,26 @@
         <p id="loading-text" style="color: #94a3b8; margin-top: 10px; font-size: 14px; text-align: center; max-width: 80%;">Preparing environment...</p>
     </div>
     
+    <div id="auth-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(11, 15, 25, 0.85); backdrop-filter: blur(10px); z-index: 9998; display: flex; flex-direction: column; align-items: center; justify-content: center; color: white;">
+        <div class="glass" style="padding: 40px; border-radius: 20px; width: 400px; max-width: 90%; display: flex; flex-direction: column; gap: 20px;">
+            <div style="text-align: center; margin-bottom: 10px;">
+                <i data-lucide="shield-check" style="width: 48px; height: 48px; color: #3b82f6;"></i>
+                <h2 style="margin: 10px 0 5px 0;">BETA ACCESS</h2>
+                <p style="color: #94a3b8; font-size: 14px; margin: 0;">Sign in to unlock Infinite Downloader</p>
+            </div>
+            
+            <div id="auth-error" style="color: #ef4444; font-size: 13px; text-align: center; display: none;"></div>
+            <div id="auth-msg" style="color: #10b981; font-size: 13px; text-align: center; display: none;"></div>
+            
+            <input type="email" id="auth-email" class="glass-input" placeholder="Email Address" style="width: 100%;">
+            <input type="password" id="auth-pass" class="glass-input" placeholder="Password" style="width: 100%;">
+            
+            <button id="auth-login-btn" class="btn primary-btn neon-glow" style="width: 100%; padding: 12px; margin-top: 10px;">LOGIN</button>
+            <button id="auth-signup-btn" class="btn glass-btn" style="width: 100%; padding: 12px;">CREATE ACCOUNT</button>
+            <button id="auth-resend-btn" class="btn glass-btn" style="width: 100%; padding: 12px; display: none;">RESEND VERIFICATION EMAIL</button>
+        </div>
+    </div>
+    
     <canvas id="bg-canvas"></canvas>
     <div class="app-container">
         <!-- Sidebar -->
@@ -85,7 +105,7 @@
     </div>
     
     <script src="animation.js"></script>
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
     <script>
         lucide.createIcons();
     </script>
