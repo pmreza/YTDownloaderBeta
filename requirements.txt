@@ -1,5 +1,0 @@
-customtkinter==5.2.2
-Pillow
-yt-dlp==2024.4.9
-requests==2.34.2
-flet==0.86.5
